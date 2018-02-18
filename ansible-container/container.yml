@@ -63,6 +63,8 @@ services:
         - database
     depends_on:
         - database
+    roles:
+      - rml.web
   web:
     from: "nginx"
     restart: always
@@ -76,6 +78,5 @@ services:
         - php_fpm
     roles:
       - rml.web
-        #    extra_hosts:
-        #      php_fpm_server:
+      - rml.nginx
 registries: {}

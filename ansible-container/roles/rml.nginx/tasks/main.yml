@@ -1,0 +1,8 @@
+---
+- name: install default config nginx
+  copy:
+      src: default.conf
+      dest: /etc/nginx/conf.d/default.conf
+      mode: 0644
+      owner: root
+      group: root
