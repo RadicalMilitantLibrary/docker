@@ -1,13 +1,16 @@
 version: "2"
 settings:
-
+  vars_files:
+      - config.yml
   conductor:
     # The Conductor container does the heavy lifting, and provides a portable
     # Python runtime for building your target containers. It should be derived
     # from the same distribution as you're building your target containers with.
       base: "debian:stretch"
     # roles_path:   # Specify a local path containing Ansible roles
-    # volumes:      # Provide a list of volumes to mount
+  volumes:      # Provide a list of volumes to mount
+    - /rml/database-master:/rml/database-master
+    - /rml/www-master:/usr/share/nginx/www-master
     # environment:  # List or mapping of environment variables
 
   # Set the name of the project. Defaults to basename of the project directory.
@@ -52,11 +55,15 @@ services:
   database:
     from: "postgres:10"
     restart: always
+    entrypoint: [ "docker-entrypoint.sh" ]
+    command: ["postgres"]
     expose:
       - 5487
   php_fpm:
     from: "php:fpm"
     restart: always
+    entrypoint: [ "docker-php-entrypoint" ]
+    command: ["php-fpm"]
     expose:
       - 9000
     links:
@@ -64,7 +71,9 @@ services:
     depends_on:
         - database
     roles:
-      - rml.web
+      - rml.php
+    volumes:
+      - /rml/www-master:/usr/share/nginx/www-master
   web:
     from: "nginx"
     restart: always
@@ -79,4 +88,6 @@ services:
     roles:
       - rml.web
       - rml.nginx
+    volumes:
+      - /rml/www-master:/usr/share/nginx/www-master
 registries: {}
