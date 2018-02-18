@@ -1,42 +1,16 @@
 ---
-- name: create /usr/share/nginx
+- name: create /usr/share/nginx/www-master
   file:
-      path: /usr/share/nginx/
+      path: /usr/share/nginx/www-master
       owner: root
       group: root
       state: directory
 
-- name: install unzip
-  apt:
-      name: unzip
-      update_cache: yes
-      state: latest
-
-- name: install rml website
-  get_url:
-      url: https://github.com/RadicalMilitantLibrary/www/archive/master.zip
-      dest: /tmp/master.zip
-      validate_certs: no
-
-- name: entpacke website
-  unarchive:
-      remote_src: yes
-      src:  /tmp/master.zip
-      dest: /usr/share/nginx
-
-- name: deinstall unzip
-  apt:
-      name: unzip
-      state: absent
-
-- name: remove file
-  file:
-      path: /tmp/master.zip
-      state: absent
-
-- name: set file perms
-  file:
-      path: /usr/share/nginx/
+- name: setup website
+  template:
+      src: settings.php.j2
+      dest: /usr/share/nginx/www-master/settings.php
       owner: root
       group: root
-      state: directory
+      mode: 0444
+
