@@ -47,20 +47,35 @@ settings:
   #  description:
   #  display_name:
 
+
 services:
+  database:
+    from: "postgres:10"
+    restart: always
+    expose:
+      - 5487
+  php_fpm:
+    from: "php:fpm"
+    restart: always
+    expose:
+      - 9000
+    links:
+        - database
+    depends_on:
+        - database
   web:
     from: "nginx"
+    restart: always
+    entrypoint: [ "nginx", "-g", "daemon off;" ]
     ports:
       - "80:80"
       - "443:443"
-    links:
-      - "php"
-  php:
-    from: "php:fpm"
-    links:
-      - "database"
-  database:
-    from: "postgres:10"
-    expose:
-      - 5487
+    external_links:
+        - php_fpm
+    depends_on:
+        - php_fpm
+    roles:
+      - rml.web
+        #    extra_hosts:
+        #      php_fpm_server:
 registries: {}
