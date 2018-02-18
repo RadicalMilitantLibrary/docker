@@ -1,0 +1,25 @@
+---
+- name: install packages
+  apt:
+      name: "{{ item }}"
+      state: latest
+      update_cache: true
+  items:
+      - libpq-dev
+      - libpng-dev
+      - zlib1g-dev
+
+
+- name: install php extensions
+  command: /usr/local/bin/docker-php-ext-install {{ item }}
+  items:
+      - pgsql
+      - gd
+      - zip
+
+- name: enable php extensions
+  command: /usr/local/bin/docker-php-ext-enable {{ item }}
+  items:
+      - pgsql
+      - gd
+      - zip
