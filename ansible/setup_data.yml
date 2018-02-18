@@ -1,0 +1,95 @@
+---
+ - hosts: localhost
+   tasks:
+    - name: create /rml
+      file:
+          path: /rml
+          owner: root
+          group: root
+          state: directory
+
+    - name: install packages
+      apt:
+          name: "{{ item }}"
+          update_cache: yes
+          state: latest
+      items:
+          - unzip
+          - rsync
+      tags:
+          - synchronize
+
+# Website install
+    - name: download rml website
+      get_url:
+          url: https://github.com/RadicalMilitantLibrary/www/archive/master.zip
+          dest: /tmp/master.zip
+          validate_certs: no
+
+    - name: entpacke website
+      unarchive:
+          remote_src: yes
+          src:  /tmp/master.zip
+          dest: /rml
+
+    - name: remove file
+      file:
+          path: /tmp/master.zip
+          state: absent
+# Website install end
+# Website update
+    - name: download rml database
+      get_url:
+          url: https://github.com/RadicalMilitantLibrary/database/archive/master.zip
+          dest: /tmp/master.zip
+          validate_certs: no
+
+    - name: entpacke database
+      unarchive:
+          remote_src: yes
+          src:  /tmp/master.zip
+          dest: /rml
+
+    - name: synchronize wenbsite authors
+      synchronize:
+          dest: /rml/www-master/authors/
+          src: /rml/database-master/1077.authors/
+          partial: yes
+      delegate_to: localhost
+      tags:
+          - synchronize
+
+    - name: synchronize wenbsite covers
+      synchronize:
+          dest: /rml/www-master/covers/
+          src: /rml/database-master/1077.covers/
+          partial: yes
+      delegate_to: localhost
+      tags:
+          - synchronize
+
+    - name: synchronize wenbsite pictures
+      synchronize:
+          dest: /rml/www-master/pictures/
+          src: /rml/database-master/1077.pictures/
+          partial: yes
+      delegate_to: localhost
+      tags:
+          - synchronize
+
+    - name: remove file
+      file:
+          path: /tmp/master.zip
+          state: absent
+# Website update end
+
+    - name: deinstall packages
+      apt:
+          name: "{{ item }}"
+          state: absent
+      items:
+          - unzip
+          - rsync
+      tags:
+          - synchronize
+

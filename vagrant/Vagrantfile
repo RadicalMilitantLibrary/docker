@@ -88,6 +88,9 @@ Vagrant.configure("2") do |config|
   # documentation for more information about their specific syntax and use.
   config.vm.provision :shell, path: "create_disk.sh"
   config.vm.provision :shell, path: "../prepare_local_system.sh"
+  config.vm.provision "ansible_local" do |ansible|
+      ansible.playbook = "../ansible/setup_data.yml"
+  end
 
   config.vm.provision "shell", inline: <<-SHELL
     if [ 0 -eq "`docker ps  --filter NAME=portainer | grep -v CONTAINER | wc -l`" ]
