@@ -1,5 +1,6 @@
 ---
  - hosts: localhost
+   become: true
    tasks:
     - name: create /rml
       file:
@@ -50,7 +51,7 @@
           src:  /tmp/master.zip
           dest: /rml
 
-    - name: synchronize wenbsite authors
+    - name: synchronize website authors
       synchronize:
           dest: /rml/www-master/authors/
           src: /rml/database-master/1077.authors/
@@ -59,7 +60,7 @@
       tags:
           - synchronize
 
-    - name: synchronize wenbsite covers
+    - name: synchronize website covers
       synchronize:
           dest: /rml/www-master/covers/
           src: /rml/database-master/1077.covers/
@@ -68,7 +69,7 @@
       tags:
           - synchronize
 
-    - name: synchronize wenbsite pictures
+    - name: synchronize website pictures
       synchronize:
           dest: /rml/www-master/pictures/
           src: /rml/database-master/1077.pictures/
