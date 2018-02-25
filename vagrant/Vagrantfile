@@ -88,9 +88,11 @@ Vagrant.configure("2") do |config|
   # documentation for more information about their specific syntax and use.
   config.vm.provision :shell, path: "create_disk.sh"
   config.vm.provision :shell, path: "../prepare_local_system.sh"
+
   config.vm.provision "ansible_local" do |ansible|
       ansible.playbook = "/vagrant_data/ansible/setup_data.yml"
       ansible.limit = "localhost"
+      ansible.inventory_path = "/vagrant_data/ansible/inventory"
   end
 
   config.vm.provision "shell", inline: <<-SHELL
