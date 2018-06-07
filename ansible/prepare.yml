@@ -1,0 +1,73 @@
+---
+ - hosts: localhost
+   become: true
+   tasks:
+    - name: install epel-release
+      yum:
+        name: "{{ item }}"
+        update_cache: yes
+        state: latest
+      with_items:
+        - epel-release
+    - name: install packages
+      yum:
+        name: "{{ item }}"
+        update_cache: yes
+        state: latest
+      with_items:
+        - python-pip
+        - python-wheel
+        - python-setuptools
+        - python-psycopg2
+        - yum-utils
+        - device-mapper-persistent-data
+        - lvm2
+    - name: upgrade pip
+      pip:
+        name: "setuptools 'pip==9.*'"
+        state: latest
+    - name: entferne docker
+      yum:
+        name: "{{ item }}"
+        update_cache: yes
+        state: removed
+      with_items:
+        - docker
+        - docker-client
+        - docker-client-latest
+        - docker-common
+        - docker-latest
+        - docker-latest-logrotate
+        - docker-logrotate
+        - docker-selinux
+        - docker-engine-selinux
+        - docker-engine
+
+    - name: hinzufuegen docker repo
+      get_url:
+        dest: "/etc/yum.repos.d/docker-ce.repo"
+        url: https://download.docker.com/linux/centos/docker-ce.repo
+
+    - name: install docker-ce
+      yum:
+        name: "{{ item }}"
+        update_cache: yes
+        state: present
+      with_items:
+        - docker-ce
+
+    - name: enable and start docker
+      systemd:
+        name: docker
+        enabled: true
+        state: started
+ 
+    - name: install 
+      pip:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - 'docker-compose "docker<3.0"'
+        - 'ansible-container[docker] "docker<3.0"'
+
+
