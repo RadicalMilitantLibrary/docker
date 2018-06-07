@@ -1,17 +1,21 @@
 version: "2"
 settings:
   vars_files:
-      - config.yml
+    - config.yml
   conductor:
     # The Conductor container does the heavy lifting, and provides a portable
     # Python runtime for building your target containers. It should be derived
     # from the same distribution as you're building your target containers with.
-      base: "debian:stretch"
+    #base: "debian:stretch"
+    #base: "ubuntu:xenial"
+      base: "centos:7"
     # roles_path:   # Specify a local path containing Ansible roles
   volumes:      # Provide a list of volumes to mount
     - /rml/database-master:/rml/database-master
     - /rml/www-master:/usr/share/nginx/www-master
-    # environment:  # List or mapping of environment variables
+  environment:  # List or mapping of environment variables
+    POSTGRES_PASSWORD: "{{ DP_PASS }}"
+  #-  PATH: /usr/lib/postgresql/10/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/_usr/sbin:/_usr/bin:/_usr/local/sbin:/_usr/local/bin
 
   # Set the name of the project. Defaults to basename of the project directory.
   # For built services, concatenated with service name to form the built image name.
@@ -52,39 +56,41 @@ settings:
 
 
 services:
-  database:
-    from: "postgres:10"
-    restart: always
-    entrypoint: [ "docker-entrypoint.sh" ]
-    command: ["postgres"]
-    expose:
-      - 5487
+    #  database:
+    #    from: "centos/postgresql-96-centos7"
+    #    restart: always
+    #    #entrypoint: [ "docker-entrypoint.sh" ]
+    #    #command: ["postgres"]
+    #    expose:
+    #      - 5432
+    #    roles:
+    #      - rml.database
+    #    enviroment:
+    #      - POSTGRESQL_DATABASE: InfoCOM
+    #      - POSTGRESQL_USER: webuser
+    #      - POSTGRESQL_PASSWORD: "{{ webuser_password }}"
+    #      - POSTGRESQL_ADMIN_PASSWORD: "{{ postgres_password }}"
   php_fpm:
-    from: "php:fpm"
+    from: "centos"
     restart: always
-    entrypoint: [ "docker-php-entrypoint" ]
     command: ["php-fpm"]
     expose:
-      - 9000
-    links:
-        - database
-    depends_on:
-        - database
+      - 9001
     roles:
       - rml.php
     volumes:
       - /rml/www-master:/usr/share/nginx/www-master
   web:
-    from: "nginx"
+    from: "centos"
     restart: always
     entrypoint: [ "nginx", "-g", "daemon off;" ]
     ports:
       - "80:80"
       - "443:443"
     external_links:
-        - php_fpm
+      - php_fpm
     depends_on:
-        - php_fpm
+      - php_fpm
     roles:
       - rml.web
       - rml.nginx

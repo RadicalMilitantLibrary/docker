@@ -1,0 +1,10 @@
+---
+postgres_password: ""
+webuser_password: foobarbuzmussanderssein
+
+
+DB_SERVER: 172.18.0.1
+DB_PASS: "{{ webuser_password }}"
+SECRET_SALT: ""
+
+#ansible_python_interpreter: "/usr/bin/env python"
