@@ -1,8 +1,40 @@
 ---
-- name: install default config nginx
+- name: NGINX | install epel-release
+  yum:
+      name: "{{ item }}"
+      state: latest
+      update_cache: true
+  items:
+      - epel-release
+
+- name: NGINX | install nginx
+  yum:
+      name: "{{ item }}"
+      state: latest
+      update_cache: true
+  items:
+      - nginx
+
+- name: NGINX | create sites.d nginx
+  file:
+      path: /etc/nginx/sites.d
+      state: directory
+      mode: 0755
+      owner: root
+      group: root
+
+- name: NGINX | install nginx config
+  copy:
+      src: nginx.conf
+      dest: /etc/nginx/nginx.conf
+      mode: 0644
+      owner: root
+      group: root
+
+- name: NGINX | install default config nginx
   copy:
       src: default.conf
-      dest: /etc/nginx/conf.d/default.conf
+      dest: /etc/nginx/sites.d/default.conf
       mode: 0644
       owner: root
       group: root
