@@ -1,0 +1,80 @@
+---
+- name: POSTGRES | install postgresql
+  yum:
+    name: "{{ item }}"
+    update_cache: yes
+    state: latest
+  with_items:
+    - postgresql
+    - postgresql-server
+    - postgresql-contrib
+
+- stat:
+    path: /var/lib/pgsql/data/pg_hba.conf
+  register: initdbv
+
+- name: POSTGRES | erstelle postgesql db
+  shell: postgresql-setup initdb
+  when:  not initdbv.stat.exists
+
+- replace:
+    path: /var/lib/pgsql/data/postgresql.conf
+    regexp: '#?listen_addresses = .+#'
+    replace: "listen_addresses = '*'    #"
+
+- replace:
+    path: /var/lib/pgsql/data/pg_hba.conf
+    regexp: '(^host\s+.*)ident?$'
+    replace: '\1md5'
+
+- lineinfile:
+    path: /var/lib/pgsql/data/pg_hba.conf
+    regexp: 'host InfoCOM webuser 172.18.0.1/27 md5'
+    line: 'host InfoCOM webuser 172.18.0.1/27 md5'
+
+- name: POSTGRES | starte postgresql
+  service:
+      name: postgresql
+      state: started
+
+- name: POSTGRES | erstelle postgesql user webuser
+  become: true
+  become_user: postgres
+  postgresql_user:
+      login_password: "{{ postgres_password }}"
+      name: webuser
+      password: "{{ webuser_password }}"
+
+- name: POSTGRES | erstelle datenbank InfoCOM fuer den User webuser mit encoding='UTF8'
+  become: true
+  become_user: postgres
+  postgresql_db:
+      name: InfoCOM
+      owner: webuser
+      encoding: UTF8
+      state: present
+
+- name: POSTGRES | importiere leere datenbank InfoCOM
+  become: true
+  become_user: postgres
+  postgresql_db:
+      name: InfoCOM
+      state: restore
+      target: /rml/database-master/empty.sql
+
+- name: POSTGRES | importiere ISO639 datenbank
+  become: true
+  become_user: postgres
+  postgresql_db:
+      name: InfoCOM
+      state: restore
+      target: /rml/database-master/ISO639.sql
+
+
+- name: POSTGRES | importiere 1077 datenbank InfoCOM
+  become: true
+  become_user: postgres
+  postgresql_db:
+      name: InfoCOM
+      state: restore
+      target: /rml/database-master/1077.sql

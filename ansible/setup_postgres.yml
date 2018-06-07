@@ -1,0 +1,18 @@
+---
+ - hosts: localhost
+   vars_files:
+       - ../ansible-container/config.yml
+   become: true
+   pre_tasks:
+    - name: install packages
+      yum:
+        name: "{{ item }}"
+        update_cache: yes
+        state: latest
+      with_items:
+        - python-psycopg2
+      tags:
+        - synchronize
+   roles:
+    - rml.database
+
