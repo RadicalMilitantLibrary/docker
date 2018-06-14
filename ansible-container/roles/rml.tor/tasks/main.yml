@@ -1,0 +1,152 @@
+---
+- set_fact:
+   HOME: /var/lib/tor
+- name: TOR | install build essentials
+  yum:
+      name: "{{ item }}"
+      state: latest
+      update_cache: true
+  with_items:
+      - git
+      - redhat-rpm-config
+      - gcc
+      - libffi-devel
+      - python-devel
+      - openssl-devel
+      - epel-release
+      - automake
+      - libevent-devel
+
+- name: TOR | create src directory
+  file:
+      path: /usr/local/src
+      state: directory
+      mode: 0755
+
+- name: TOR | git repo tor
+  git:
+    repo: https://git.torproject.org/tor.git
+    dest: /usr/local/src/tor
+
+- name: TOR | get git checkout branch for last release
+  shell: git checkout $(git branch -a | grep 'release' | sort -V | tail -1)
+  args:
+    chdir: /usr/local/src/tor
+
+- name: TOR | autogen
+  shell: ./autogen.sh
+  args:
+    chdir: /usr/local/src/tor
+
+- name: TOR | configuring
+  shell: ./configure --disable-asciidoc --sysconfdir=/etc --disable-unittests
+  args:
+    chdir: /usr/local/src/tor
+
+- name: TOR | make
+  make:
+    chdir: /usr/local/src/tor
+
+- name: TOR | make install
+  make:
+    chdir: /usr/local/src/tor
+    target: install
+
+- name: TOR | remove tor directory
+  file:
+    path: /usr/local/src/tor
+    state: absent
+
+- name: TOR | install python34
+  yum:
+    name: "{{ item }}"
+    state: latest
+    update_cache: true
+  with_items:
+      - python34
+      - python34-devel
+
+- name: TOR | ensure pip
+  shell: python3 -m ensurepip #&&  rm -r /usr/lib/python*/ensurepip
+
+- name: TOR | pip install pip setuptools pycrypto
+  shell: pip3 install -U pip setuptools pycrypto
+
+- name: TOR | delete build essentials
+  yum:
+    name: "{{ item }}"
+    state: absent
+    update_cache: true
+  with_items:
+    - git
+    - redhat-rpm-config
+    - gcc
+      #- libffi-devel
+    - python-devel
+    - openssl-devel
+    - automake
+    - libevent-devel
+
+- name: TOR | install openssl and libevent
+  yum:
+    name: "{{ item }}"
+    state: latest
+    update_cache: true
+  with_items:
+    - openssl
+    - libevent
+
+- name: TOR | create /etc/tor
+  file:
+      path: /etc/tor
+      state: directory
+      mode: 0755
+
+- name: TOR | create /var/local/tor
+  file:
+      path: /var/local/tor
+      state: directory
+      mode: 0755
+
+- name: TOR | copy assets file
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: assets/entrypoint-config.yml, dest: / }
+    - { src: assets/onions/, dest: /usr/local/src/onions }
+    - { src: assets/torrc, dest: /var/local/tor/torrc.tpl }
+
+- name: TOR | install onions
+  shell: cd /usr/local/src/onions && python3 setup.py install
+
+- name: TOR | Add group tor
+  group:
+    name: tor
+    gid: 107
+    system: true
+
+- name: TOR | Add user tor
+  user:
+    name: tor
+    uid: 104
+    system: true
+    group: tor
+    home: "{{ HOME }}"
+    move_home: true
+
+- name: TOR | create {{ HOME }}/.tor
+  file:
+      path: "{{ HOME }}/.tor"
+      state: directory
+      mode: 0755
+      owner: tor
+      group: tor
+
+- name: TOR | create /root/.tor
+  file:
+      path: "/root/.tor"
+      state: directory
+      mode: 0755
+      owner: tor
+      group: tor
