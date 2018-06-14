@@ -84,6 +84,8 @@ services:
     from: "centos"
     restart: always
     entrypoint: [ "nginx", "-g", "daemon off;" ]
+    expose:
+      - 80
     ports:
       - "80:80"
       - "443:443"
@@ -96,4 +98,22 @@ services:
       - rml.nginx
     volumes:
       - /rml/www-master:/usr/share/nginx/www-master
+  tor:
+    from: "centos"
+    restart: always
+    entrypoint: ["pyentrypoint"]
+    #    command: [ "su -tor" ]
+    environment:
+      HOME: /var/lib/tor
+      USER: tor
+      WEB_PORTS: 80:80
+      WEB_SERVICE_NAME: RML
+    links:
+      - web
+    depends_on:
+      - web
+    roles:
+      - rml.tor
+    volumes:
+      - /var/lib/tor/hidden_service
 registries: {}
