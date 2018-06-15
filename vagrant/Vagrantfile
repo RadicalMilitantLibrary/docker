@@ -126,9 +126,7 @@ Vagrant.configure("2") do |config|
     fi
   SHELL
 
-  # Security configuration
-#  config.vm.provision "shell", inline: <<-SHELL
-#    passwd vagrant -l
-#    passwd ubuntu -l
-#  SHELL
+  config.vm.provision "shell", inline: <<-SHELL
+    docker exec -ti radicalmilitantlibrary_tor_1 onions
+  SHELL
 end
