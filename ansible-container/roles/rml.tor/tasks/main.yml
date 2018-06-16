@@ -1,6 +1,15 @@
 ---
 - set_fact:
    HOME: /var/lib/tor
+
+- name: TOR | install epel releases
+  yum:
+      name: "{{ item }}"
+      state: latest
+      update_cache: true
+  with_items:
+      - epel-release
+
 - name: TOR | install build essentials
   yum:
       name: "{{ item }}"
@@ -13,9 +22,9 @@
       - libffi-devel
       - python-devel
       - openssl-devel
-      - epel-release
       - automake
       - libevent-devel
+      - rust
 
 - name: TOR | create src directory
   file:
@@ -29,7 +38,8 @@
     dest: /usr/local/src/tor
 
 - name: TOR | get git checkout branch for last release
-  shell: git checkout $(git branch -a | grep 'release' | sort -V | tail -1)
+  shell: git checkout tags/$(git tag | grep tor | grep -vE "(alpha|dev|rc|root|beta|pre)" | tail -1) -b buildit
+ #$(git branch -a | grep 'release' | sort -V | tail -1)
   args:
     chdir: /usr/local/src/tor
 
@@ -86,6 +96,7 @@
     - openssl-devel
     - automake
     - libevent-devel
+    - rust
 
 - name: TOR | install openssl and libevent
   yum:
