@@ -17,17 +17,20 @@
   shell: postgresql-setup initdb
   when:  not initdbv.stat.exists
 
-- replace:
+- name: POSTGRES | replace listen_addresses
+  replace:
     path: /var/lib/pgsql/data/postgresql.conf
     regexp: '#?listen_addresses = .+#'
     replace: "listen_addresses = '*'    #"
 
-- replace:
+- name: POSTGRES | replace host in pg_hba.conf
+  replace:
     path: /var/lib/pgsql/data/pg_hba.conf
     regexp: '(^host\s+.*)ident?$'
     replace: '\1md5'
 
-- lineinfile:
+- name: POSTGRES | lineinfile in pg_hba.conf
+  lineinfile:
     path: /var/lib/pgsql/data/pg_hba.conf
     regexp: 'host InfoCOM webuser 172.18.0.1/27 md5'
     line: 'host InfoCOM webuser 172.18.0.1/27 md5'
