@@ -131,6 +131,6 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "shell", inline: <<-SHELL
     set -x
-    docker exec -ti radicalmilitantlibrary_tor_1 onions
+    docker exec -i radicalmilitantlibrary_tor_1 onions
   SHELL
 end
