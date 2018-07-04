@@ -21,35 +21,22 @@
         - synchronize
 
 # Website install
+    - name: sleep for 60s and continue with play
+      wait_for:
+        host: github.com
+        port: 80
+        timeout: 60
+
     - name: download rml website
-      get_url:
-        url: https://github.com/RadicalMilitantLibrary/www/archive/master.zip
-        dest: /tmp/master.zip
-        validate_certs: no
-
-    - name: entpacke website
-      unarchive:
-        remote_src: yes
-        src:  /tmp/master.zip
-        dest: /rml
-
-    - name: remove file
-      file:
-        path: /tmp/master.zip
-        state: absent
+      git:
+        repo: https://github.com/RadicalMilitantLibrary/www.git
+        dest: /rml/www-master
 # Website install end
 # Website update
     - name: download rml database
-      get_url:
-        url: https://github.com/RadicalMilitantLibrary/database/archive/master.zip
-        dest: /tmp/master.zip
-        validate_certs: no
-
-    - name: entpacke database
-      unarchive:
-        remote_src: yes
-        src:  /tmp/master.zip
-        dest: /rml
+      git:
+        repo: https://github.com/RadicalMilitantLibrary/database.git
+        dest: /rml/database-master
 
     - name: synchronize website authors
       synchronize:

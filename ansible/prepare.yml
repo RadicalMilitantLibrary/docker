@@ -22,6 +22,8 @@
         - yum-utils
         - device-mapper-persistent-data
         - lvm2
+        - git
+
     - name: upgrade pip
       pip:
         name: "setuptools 'pip==9.*'"
