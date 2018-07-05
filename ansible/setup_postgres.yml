@@ -16,3 +16,9 @@
    roles:
     - rml.database
 
+   post_tasks:
+    - name: enable postgresql
+      service:
+        name: postgresql
+        enabled: yes
+        state: reloaded
