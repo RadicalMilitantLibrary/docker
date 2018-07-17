@@ -1,0 +1,19 @@
+- name: install packages
+  yum:
+      name: "{{ item }}"
+      state: latest
+      update_cache: true
+  items:
+    - "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+    - "http://rpms.remirepo.net/enterprise/remi-release-7.rpm"
+    - yum-utils
+    
+
+- name: Add remi-php{{ php_version }}
+  yum_repository:
+    name: remi-php{{ php_version }}
+    description: Remi's PHP {{ php_version }} RPM repository for Enterprise Linux  {{ releasever }}- $basearch
+    mirrorlist: http://rpms.remirepo.net/enterprise/{{ releasever }}/php{{ php_version }}/mirror
+    enabled: yes
+    gpgcheck: 1
+    gpgkey: http://rpms.remirepo.net/RPM-GPG-KEY-remi
