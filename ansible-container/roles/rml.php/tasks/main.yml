@@ -1,4 +1,7 @@
 ---
+- include_tasks: enable_php7.yml
+  when: php_major_version == 7
+
 - name: install packages
   yum:
       name: "{{ item }}"
