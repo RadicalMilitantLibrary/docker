@@ -13,6 +13,11 @@
       - php-gd
       - php-zip
 
+- name: create directory /run/php-fpm
+  file:
+      path: /run/php-fpm
+      state: directory
+
 - name: change listen
   replace:
       path: /etc/php-fpm.d/www.conf
