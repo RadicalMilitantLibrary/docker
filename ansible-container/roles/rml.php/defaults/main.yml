@@ -1,2 +1,3 @@
 php_major_version: 7
 php_minor_version: 5
+php_version: "{{ php_major_version }}{{ php_minor_version }}"
