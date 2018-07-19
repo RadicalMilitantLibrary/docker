@@ -1,4 +1,4 @@
-- name: install packages
+- name: install packages for activate php version {{ php_version }}
   yum:
       name: "{{ item }}"
       state: latest
