@@ -1,7 +1,7 @@
 ---
 - include_tasks: enable_php.yml
 
-- name: install packages php-fpm nad dependencies
+- name: install packages php-fpm and dependencies
   yum:
       name: "{{ item }}"
       state: latest
