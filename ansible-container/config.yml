@@ -7,4 +7,6 @@ DB_SERVER: 172.18.0.1
 DB_PASS: "{{ webuser_password }}"
 SECRET_SALT: ""
 
+php_major_version: 5
+php_minor_version: 5
 #ansible_python_interpreter: "/usr/bin/env python"
