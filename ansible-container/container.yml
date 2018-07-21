@@ -73,7 +73,7 @@ services:
   php_fpm:
     from: "centos"
     restart: always
-    command: ["php-fpm"]
+    command: ["php-fpm","-F","-y", "/etc/php-fpm.conf"]
     expose:
       - 9001
     roles:
