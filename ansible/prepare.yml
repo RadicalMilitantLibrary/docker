@@ -71,5 +71,6 @@
       with_items:
         - 'docker-compose "docker<3.0"'
         - 'ansible-container[docker] "docker<3.0"'
+        - 'ruamel.yaml==0.15.51'
 
 
