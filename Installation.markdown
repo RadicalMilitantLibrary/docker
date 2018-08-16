@@ -16,7 +16,6 @@ Directly on your system:
 Repo: `git clone https://github.com/RadicalMilitantLibrary/docker-container.git`
 
 # Installation
-
 1. Clone git repository: `git clone https://github.com/RadicalMilitantLibrary/docker-container.git`
 2. Change into repository: `cd docker-container`
 
@@ -80,6 +79,14 @@ You need a centos or fedora to run it on your host machine.
   vagrant ssh
   sudo docker exec -it radicalmilitantlibrary_tor_1 onions
   ```
+
+#### Install and Configure git
+
+1. Install git `yum install -y git`
+2. setup username `git config --global user.name ${name}`
+3. setup email `git config --global user.email ${name}@users.noreply.github.com`
+
+More Information about git: https://git-scm.com/doc
 
 ## Troubleshoot
 
